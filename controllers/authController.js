@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var User = require("../models/userModel.js");
 
 const jwt = require('jwt-simple');
-const config = require('../config');
+const config = require('../config2');
 
 // Creates a token use the secret stored in the config file + a timestamp
 function tokenForUser(user) {
