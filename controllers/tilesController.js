@@ -2,7 +2,7 @@
 var mongoose = require("mongoose");
 var tile = require("../models/tileModel.js");
 const jwt = require('jwt-simple');
-const config = require('../config2');
+const config = require('../config');
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 
 // GET localhost:3000/
