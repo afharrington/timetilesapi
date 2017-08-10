@@ -9,7 +9,7 @@ mongoose.Promise = global.Promise;
 
 // Creates an Express server listening on port 3000
 const port = process.env.PORT || 3000;
-const uri = ('mongodb://anna:dailytuba@ds121543.mlab.com:21543/timetiles')
+const uri = ('mongodb://annafkh:dailytuba@ds123752.mlab.com:23752/tiles')
 mongoose.connect(uri);
 
 // mongoose.connect("mongodb://localhost:27017/timetiles");
