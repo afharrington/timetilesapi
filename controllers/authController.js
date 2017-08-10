@@ -15,11 +15,12 @@ function tokenForUser(user) {
 exports.login = function(req, res, next) {
   // User's email and password has been authorized via passport, just needs a token
   const token = tokenForUser(req.user);
-  res.send({ token: token } );
+  res.send({ token: token, name: req.user.name } );
 }
 
 // POST localhost:3000/signup
 exports.signup = function(req, res, next) {
+  const name = req.body.name;
   const email = req.body.email;
   const password = req.body.password;
 
@@ -34,14 +35,15 @@ exports.signup = function(req, res, next) {
       }
       // Creates new user
       const user = new User({
+        name: name,
         email: email,
         password: password
       });
 
       user.save(function(err){
         if (err) { return next(err); }
-        // Passes entire Mongo-created user object to function
-        res.json({ token: tokenForUser(user) });
+
+        res.json({ token: tokenForUser(user), name: user.name });
       });
     });
 }
