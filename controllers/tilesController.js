@@ -109,3 +109,32 @@ exports.delete_entry = function(req, res) {
     res.send(tile);
   });
 }
+
+// PUT localhost:3000/tile/:tileId/entry/:entryIndex
+// Edit an entry
+exports.update_entry = function(req, res) {
+  tile.findById(req.params.tileId, function(err, tile) {
+    const currentEntries = [...tile.entries];
+    const indexToUpdate = req.params.entryIndex;
+
+    // First delete the updated entry's minutes from the total and update color
+    tile.totalMinutes = Number(tile.totalMinutes);
+    const originalMinutes = Number(currentEntries[indexToUpdate].minutes);
+    tile.totalMinutes -= originalMinutes;
+    tile.color = tile.color - (originalMinutes / 60);
+
+    const updatedEntry = {content: req.body.content, minutes: req.body.minutes};
+    const updatedMinutes = Number(updatedEntry.minutes);
+
+    tile.entries = [...currentEntries.slice(0, indexToUpdate), updatedEntry, ...currentEntries.slice(indexToUpdate + 1)];
+
+    // Add the new updated entry's minutes back to the total and update color
+    tile.totalMinutes += updatedMinutes;
+    tile.color = tile.color + (updatedMinutes / 60);
+
+    tile.save(function (err, updatedEntries) {
+      if (err) res.send(err);
+    });
+    res.send(tile);
+  });
+}
