@@ -87,12 +87,29 @@ exports.create_entry = function(req, res) {
   });
 }
 
-// DELETE localhost:3000/tile/:tileId/entry/:entryIndex
+
+
+// DELETE localhost:3000/tile/:tileId
+// Delete a tile
+exports.delete_tile = function(req, res) {
+  tile.remove({
+    _id: req.params.tileId
+  }, function(err) {
+    if (err) res.send(err);
+    res.json({ message: "tile successfully deleted" });
+  });
+};
+
+
+
+// DELETE localhost:3000/tile/:tileId/entry/:entryId
 // Delete an entry
 exports.delete_entry = function(req, res) {
   tile.findById(req.params.tileId, function(err, tile) {
     const currentEntries = [...tile.entries];
-    const indexToDelete = req.params.entryIndex;
+    const indexToDelete = currentEntries.findIndex( entry => {
+      return entry._id == req.params.entryId;
+    });
 
     // Update the total minutes in tile after deletion
     tile.totalMinutes = Number(tile.totalMinutes);
@@ -110,12 +127,14 @@ exports.delete_entry = function(req, res) {
   });
 }
 
-// PUT localhost:3000/tile/:tileId/entry/:entryIndex
+// PUT localhost:3000/tile/:tileId/entry/:entryId
 // Edit an entry
 exports.update_entry = function(req, res) {
   tile.findById(req.params.tileId, function(err, tile) {
     const currentEntries = [...tile.entries];
-    const indexToUpdate = req.params.entryIndex;
+    const indexToUpdate = currentEntries.findIndex( entry => {
+      return entry._id == req.params.entryId;
+    });
 
     // First delete the updated entry's minutes from the total and update color
     tile.totalMinutes = Number(tile.totalMinutes);

@@ -32,6 +32,6 @@ module.exports = function(app) {
   app.delete('/tile/:tileId', requireAuth, tiles.delete_tile);
   app.put('/tile/:tileId', requireAuth, tiles.update_color);
 
-  app.delete('/tile/:tileId/entry/:entryIndex', requireAuth, tiles.delete_entry);
-  app.put('/tile/:tileId/entry/:entryIndex', requireAuth, tiles.update_entry);
+  app.delete('/tile/:tileId/entry/:entryId', requireAuth, tiles.delete_entry);
+  app.put('/tile/:tileId/entry/:entryId', requireAuth, tiles.update_entry);
 };
