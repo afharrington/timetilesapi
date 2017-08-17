@@ -14,7 +14,7 @@ exports.list_all_tiles = function(req, res) {
   tile.find({ user: decoded.sub }, function(err, tile) {
     if (err) res.send(err);
     res.json(tile);
-  }).sort({ created_date: -1 });
+  }).sort({ color: -1 });
 };
 
 // POST localhost:3000/
@@ -76,17 +76,14 @@ exports.create_entry = function(req, res) {
 
     // Increase the color value of a tile
     tile.color = tile.color + (entryMinutes / 60);
-
-    const newEntry = {content: req.body.content, minutes: req.body.minutes};
-    tile.entries = [{content: req.body.content, minutes: req.body.minutes}].concat(tile.entries);
+    tile.entries = [{ date: req.body.date, content: req.body.content, comments: req.body.comments, minutes: req.body.minutes}].concat(tile.entries);
 
     tile.save(function (err, updatedtile) {
       if (err) res.send(err);
-      res.send(newEntry);
+      res.send(tile);
     });
   });
 }
-
 
 
 // DELETE localhost:3000/tile/:tileId
@@ -142,7 +139,7 @@ exports.update_entry = function(req, res) {
     tile.totalMinutes -= originalMinutes;
     tile.color = tile.color - (originalMinutes / 60);
 
-    const updatedEntry = {content: req.body.content, minutes: req.body.minutes};
+    const updatedEntry = {content: req.body.content, comments: req.body.comments, minutes: req.body.minutes};
     const updatedMinutes = Number(updatedEntry.minutes);
 
     tile.entries = [...currentEntries.slice(0, indexToUpdate), updatedEntry, ...currentEntries.slice(indexToUpdate + 1)];

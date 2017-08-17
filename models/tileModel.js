@@ -3,8 +3,9 @@ var Schema = mongoose.Schema;
 
 var Entry = new Schema({
   content: { type: String, required: true },
+  comments: { type: String, default: '' },
   minutes: { type: Number },
-  created_date: { type: Date, default: Date.now }
+  date: { type: Date }
 });
 
 var Tile = new Schema({
