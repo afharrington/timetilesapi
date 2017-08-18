@@ -108,13 +108,13 @@ exports.delete_entry = function(req, res) {
       return entry._id == req.params.entryId;
     });
 
-    // Update the total minutes in tile after deletion
-    tile.totalMinutes = Number(tile.totalMinutes);
-    const entryMinutes = Number(currentEntries[indexToDelete].minutes);
-    tile.totalMinutes -= entryMinutes;
-
-    // Decrease the color value of a tile
-    tile.color = tile.color - (entryMinutes / 60);
+    // // Update the total minutes in tile after deletion
+    // tile.totalMinutes = Number(tile.totalMinutes);
+    // const entryMinutes = Number(currentEntries[indexToDelete].minutes);
+    // tile.totalMinutes -= entryMinutes;
+    //
+    // // Decrease the color value of a tile
+    // tile.color = tile.color - (entryMinutes / 60);
 
     tile.entries = [...currentEntries.slice(0, indexToDelete), ...currentEntries.slice(indexToDelete + 1)];
     tile.save(function (err, updatedEntries) {
