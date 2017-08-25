@@ -36,6 +36,7 @@ exports.create_tile = function(req, res) {
 // PUT localhost:3000/tile/:tileId/settings
 exports.update_tile = function(req, res) {
   tile.findById(req.params.tileId, function(err, tile) {
+    tile.name = req.body.name;
     tile.mode = req.body.mode;
     tile.goalHours = req.body.goalHours;
     tile.goalCycle = req.body.goalCycle;
