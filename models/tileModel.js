@@ -14,7 +14,13 @@ var Tile = new Schema({
   user: { type: String },
   totalMinutes: { type: Number, default: 0 },
   color: { type: Number, default: 0 },
-  entries: [Entry]
+  entries: [Entry],
+  mode: { type: String, required: true, default: "continuous" },
+  continuousHours: { type: Number, default: 1 },
+  continuousDays: { type: Number, default: 2 },
+  goalHours: { type: Number, default: null },
+  goalCycle: { type: String, default: null },
+  goalLastCycleStart: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model("Tile", Tile);

@@ -1,6 +1,7 @@
 "use strict";
 var mongoose = require("mongoose");
 var tile = require("../models/tileModel.js");
+var entry = require("../models/tileModel.js");
 const jwt = require('jwt-simple');
 const config = require('../config');
 const ExtractJwt = require('passport-jwt').ExtractJwt;
@@ -31,10 +32,29 @@ exports.create_tile = function(req, res) {
   });
 }
 
+
+// PUT localhost:3000/tile/:tileId/settings
+exports.update_tile = function(req, res) {
+  tile.findById(req.params.tileId, function(err, tile) {
+    tile.mode = req.body.mode;
+    tile.goalHours = req.body.goalHours;
+    tile.goalCycle = req.body.goalCycle;
+    tile.continuousHours = req.body.continuousHours;
+    tile.continuousDays = req.body.continuousDays;
+    tile.goalLastCycleStart = req.body.goalLastCycleStart;
+    tile.color = req.body.color;
+
+    tile.save(function (err, tile) {
+      if (err) res.send(err);
+      res.send(tile);
+    });
+  });
+}
+
+
 // PUT localhost:3000/tile/:tileId
 // Update the tile's color value
 exports.update_color = function(req, res) {
-
   tile.findById(req.params.tileId, function(err, tile) {
     tile.color = req.body.color;
     tile.save(function (err, tile) {
@@ -74,17 +94,28 @@ exports.create_entry = function(req, res) {
     const entryMinutes = Number(req.body.minutes);
     tile.totalMinutes += entryMinutes;
 
-    // Increase the color value of a tile
-    tile.color = tile.color + (entryMinutes / 60);
+    let addToColor;
+
+    if (tile.mode == "goal") {
+      let hoursPerColor = ( tile.goalHours / tile.goalCycle) * 60;
+      addToColor = entryMinutes / hoursPerColor;
+    } else if (tile.mode == "continuous") {
+      addToColor = entryMinutes / ( tile.continuousHours * 60);
+    }
+
+    tile.color = tile.color + addToColor;
     tile.entries = [{ date: req.body.date, content: req.body.content, comments: req.body.comments, minutes: req.body.minutes}].concat(tile.entries);
 
-    tile.save(function (err, updatedtile) {
+    tile.entries.sort((a, b) => {
+      return b.date - a.date;
+    });
+
+    tile.save(function (err, tile) {
       if (err) res.send(err);
       res.send(tile);
     });
   });
 }
-
 
 // DELETE localhost:3000/tile/:tileId
 // Delete a tile
@@ -96,8 +127,6 @@ exports.delete_tile = function(req, res) {
     res.json({ message: "tile successfully deleted" });
   });
 };
-
-
 
 // DELETE localhost:3000/tile/:tileId/entry/:entryId
 // Delete an entry
@@ -117,6 +146,7 @@ exports.delete_entry = function(req, res) {
     tile.color = tile.color - (entryMinutes / 60);
 
     tile.entries = [...currentEntries.slice(0, indexToDelete), ...currentEntries.slice(indexToDelete + 1)];
+
     tile.save(function (err, updatedEntries) {
       if (err) res.send(err);
     });
@@ -139,7 +169,7 @@ exports.update_entry = function(req, res) {
     tile.totalMinutes -= originalMinutes;
     tile.color = tile.color - (originalMinutes / 60);
 
-    const updatedEntry = {content: req.body.content, comments: req.body.comments, minutes: req.body.minutes};
+    const updatedEntry = {date: req.body.date, content: req.body.content, comments: req.body.comments, minutes: req.body.minutes};
     const updatedMinutes = Number(updatedEntry.minutes);
 
     tile.entries = [...currentEntries.slice(0, indexToUpdate), updatedEntry, ...currentEntries.slice(indexToUpdate + 1)];
@@ -149,8 +179,10 @@ exports.update_entry = function(req, res) {
     tile.color = tile.color + (updatedMinutes / 60);
 
     tile.save(function (err, updatedEntries) {
-      if (err) res.send(err);
-    });
-    res.send(tile);
+      if (err) {
+        return res.send(err);
+      }
+    res.json(tile);
   });
+});
 }

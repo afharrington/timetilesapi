@@ -31,6 +31,7 @@ module.exports = function(app) {
   app.post('/tile/:tileId', requireAuth, tiles.create_entry);
   app.delete('/tile/:tileId', requireAuth, tiles.delete_tile);
   app.put('/tile/:tileId', requireAuth, tiles.update_color);
+  app.put('/tile/:tileId/settings', requireAuth, tiles.update_tile);
 
   app.delete('/tile/:tileId/entry/:entryId', requireAuth, tiles.delete_entry);
   app.put('/tile/:tileId/entry/:entryId', requireAuth, tiles.update_entry);
